@@ -26,20 +26,35 @@ const RegistrationForm = () => {
     'Superhero Showdown: Marvel vs. DC & Beyond!'
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const existingData = JSON.parse(localStorage.getItem('registrations')) || [];
-    const updatedData = [...existingData, formData];
-    localStorage.setItem('registrations', JSON.stringify(updatedData));
-    toast.success('🎉 Registration successful!');
-    setFormData({
-      event: 'All Events',
-      parentName: '',
-      mobile: '',
-      email: '',
-      kidName: '',
-      kidAge: ''
-    });
+
+    try {
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        toast.success('🎉 Registration successful!');
+        setFormData({
+          event: 'All Events',
+          parentName: '',
+          mobile: '',
+          email: '',
+          kidName: '',
+          kidAge: ''
+        });
+      } else {
+        toast.error('❌ Registration failed!');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('🚨 Server error!');
+    }
   };
 
   const handleChange = (e) => {
